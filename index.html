@@ -1,0 +1,2089 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioNat Lab | IISER Bhopal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+   <script>
+        tailwind.config = {
+            theme: {
+                 extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6',
+                            600: '#2563eb', 700: '#1d4ed8', 900: '#0f172a',
+                        },
+                        accent: '#10b981', accentHover: '#059669'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .tab-btn.active {
+            border-bottom: 2px solid #2563eb;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 35s linear infinite;
+        }
+        .hover-paused:hover {
+            animation-play-state: paused;
+        }
+        /* Carousel fade animations */
+        .carousel-item {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            z-index: 0;
+        }
+        .carousel-item.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .smooth-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        
+        /* Grid calendar aesthetics */
+        .time-slot { transition: all 0.2s; }
+        .time-slot:hover:not(.booked) { transform: scale(1.05); z-index: 10; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .slot-available { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; cursor: pointer; }
+        .slot-available:hover { background-color: #dcfce7; }
+        .slot-selected { background-color: #3b82f6; border: 1px solid #2563eb; color: white; cursor: pointer; }
+        .slot-booked { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; cursor: not-allowed; opacity: 0.8; }
+        .slot-mine { background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e; cursor: pointer; }
+        .slot-mine:hover { background-color: #fef3c7; }
+        
+        /* Notifications Toast */
+        #toast-container {
+            position: fixed;
+            top: 100px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Chat aesthetics */
+        .chat-window {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+        .typing-dot { animation: typingBounce 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Vertical Marquee for Lab News */
+        .marquee-container {
+            overflow: hidden;
+            position: relative;
+            height: 380px;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+        .marquee-content {
+            display: flex;
+            flex-direction: column;
+            animation: scroll-vertical 25s linear infinite;
+        }
+        .marquee-container:hover .marquee-content {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-vertical {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        .news-card {
+            transition: all 0.3s ease;
+        }
+        .news-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(4px);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased selection:bg-primary-500 selection:text-white">
+
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.scrollTo(0,0)">
+                    <div class="w-40 h-40 mr-3 flex items-center justify-center transition">
+                        <img src="logo.jpeg" alt="BioNat Lab Logo" class="h-full w-full object-contain">
+                    </div>
+                    <div>
+                        <span class="font-bold text-xl tracking-tight block leading-tight bg-gradient-to-r from-blue-600 to-emerald-500 bg-clip-text text-transparent group-hover:from-blue-500 group-hover:to-emerald-400 transition-all duration-300">BioNat Lab</span>
+                        <span class="text-xs text-gray-500 font-medium tracking-wide uppercase">IISER Bhopal</span>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex space-x-6 xl:space-x-8 items-center">
+                    <a href="#home" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Home</a>
+                    <a href="#research" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Research</a>
+                    <a href="#publications" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Publications</a>
+                    <a href="#team" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Team</a>
+                    <a href="#outreach" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Outreach</a>
+                    <a href="#join" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Open Positions</a>
+                    <a href="#facilities" class="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors">Facilities</a>
+                    <a href="#intranet" class="bg-primary-50 text-primary-700 px-4 py-2 rounded-full font-semibold text-sm hover:bg-primary-100 transition shadow-sm flex items-center border border-primary-100">
+                        <i class="ph-bold ph-lock-key mr-1.5 text-base"></i> Intranet
+                    </a>
+                </div>
+
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-gray-900 focus:outline-none p-2 bg-gray-100 rounded-md">
+                        <i class="ph-bold ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-100 shadow-xl absolute w-full left-0 origin-top">
+            <div class="px-4 pt-2 pb-6 space-y-1">
+                <a href="#home" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Home</a>
+                <a href="#research" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Research</a>
+                <a href="#publications" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Publications</a>
+                <a href="#team" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Team</a>
+                <a href="#outreach" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Outreach</a>
+                <a href="#join" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Open Positions</a>
+                <a href="#facilities" class="mobile-link block px-3 py-3 text-base font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 rounded-md transition">Facilities</a>
+                <a href="#intranet" class="mobile-link block px-3 py-3 text-base font-bold text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-md mt-4 flex items-center transition">
+                    <i class="ph-bold ph-lock-key mr-2"></i> Intranet Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-24 lg:pt-48 lg:pb-40 overflow-hidden bg-primary-900 min-h-[600px]">
+        
+        <div class="absolute top-20 left-0 w-full z-20 overflow-hidden bg-primary-900/95 border-b border-white/10 shadow-md">
+            <div class="flex overflow-hidden opacity-90 hover:opacity-100 transition-opacity duration-300">
+                <div class="flex animate-marquee hover-paused min-w-full">
+                    <img src="hp1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp1.1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp1.2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp3.1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp3.2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp5.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp8.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp9.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp10.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp11.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp12.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp13.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp14.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp15.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+
+                    <img src="hp1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp1.1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp1.2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp3.1.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp3.2.avif" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp5.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp8.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp9.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp10.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp11.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp12.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp13.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp14.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                    <img src="hp15.jpeg" class="h-24 w-64 flex-none border-r border-white/10 object-cover" alt="Lab view" onerror="this.src='https://placehold.co/256x96/0f172a/ffffff?text=BioNat+Lab'">
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute inset-0 z-0">
+            <div class="carousel-item active bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('images/hp1.jpg');"></div>
+            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('images/hp2.jpg');"></div>
+            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('images/hp3.jpg');"></div>
+        </div>
+        
+        <div class="absolute inset-0 bg-gradient-to-r from-primary-900/95 via-primary-900/80 to-primary-900/40 z-0"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full mt-6">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-12 xl:gap-20">
+                
+                <div class="w-full lg:w-7/12 text-center lg:text-left pt-6 lg:pt-0">
+                    <span class="inline-flex items-center py-1.5 px-4 rounded-full bg-white/10 text-blue-100 text-xs font-bold tracking-widest uppercase mb-6 border border-white/20 backdrop-blur-md shadow-lg">
+                        <i class="ph-fill ph-flask mr-2 text-accent text-sm"></i> Department of Chemistry, IISER Bhopal
+                    </span>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white tracking-tight mb-6 leading-[1.1] drop-shadow-lg">
+                        Bridging the Interface of <br class="hidden lg:block" />
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-teal-200 to-accent drop-shadow-sm">Biology & Nanotech</span>
+                    </h1>
+                    <p class="mt-4 text-lg md:text-xl text-gray-200 max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed mb-10 drop-shadow-md border-l-4 border-accent pl-4">
+                        Led by Prof. Apurba L. Koner, our multidisciplinary laboratory innovates at the molecular level, developing novel fluorescent probes, advanced biomaterials, and pi-conjugated molecules for optoelectronic studies.
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:w-auto">
+                        <a href="#research" class="bg-primary-600 text-white px-8 py-3.5 rounded-full font-bold shadow-lg hover:shadow-primary-500/50 hover:bg-primary-500 transition-all transform hover:-translate-y-0.5 w-full sm:w-auto text-center">
+                            Explore Research
+                        </a>
+                        <a href="#publications" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-3.5 rounded-full font-bold hover:bg-white/20 transition-all transform hover:-translate-y-0.5 flex items-center justify-center w-full sm:w-auto">
+                            Latest Publications <i class="ph-bold ph-arrow-down-right ml-2 text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-5/12 hidden md:block">
+                    <div class="bg-black/30 backdrop-blur-xl border border-white/10 rounded-3xl p-6 lg:p-8 shadow-2xl relative">
+                        <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                            <h3 class="text-xl font-bold text-white flex items-center">
+                                <i class="ph-fill ph-broadcast text-accent mr-2 animate-pulse"></i> Lab Updates
+                            </h3>
+                            <span class="text-xs font-semibold text-gray-300 bg-white/10 px-3 py-1 rounded-full uppercase tracking-wider">Live</span>
+                        </div>
+                        
+                        <div class="marquee-container w-full">
+                            <div class="marquee-content space-y-4">
+                                <a href="#publications" class="block news-card bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-accent mb-1 block">New Publication</span>
+                                    <h4 class="text-white text-sm font-semibold leading-snug mb-2">Our latest work on targeted cancer theranostics is now published in J. Mater. Chem. B.</h4>
+                                    <p class="text-xs text-gray-400">July 2026</p>
+                                </a>
+                                <a href="#team" class="block news-card bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-400 mb-1 block">Team News</span>
+                                    <h4 class="text-white text-sm font-semibold leading-snug mb-2">Welcoming Ms. Sukanya Chakraborty our newest Ph.D. scholars to the BioNat Lab!</h4>
+                                    <p class="text-xs text-gray-400">August 2026</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] transform translate-y-[1px] z-10 pointer-events-none">
+            <svg class="relative block w-[calc(100%+1.3px)] h-[50px] md:h-[80px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.9,122.9,202,114.2,243.6,109.1,283.4,85.1,321.39,56.44Z" class="fill-gray-50"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Research Section -->
+    <section id="research" class="py-24 relative bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">What We Do</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Core Research Areas
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto text-lg">
+                    Our interdisciplinary research spans across chemistry, biology, and materials science to develop innovative solutions for healthcare, diagnostics, and fundamental science.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl smooth-shadow border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary-600 transition-all duration-300">
+                        <i class="ph-fill ph-hexagon text-3xl text-primary-600 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Supramolecular Chemistry</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Design and synthesis of macrocyclic hosts (like cucurbiturils and cyclodextrins) for highly specific guest recognition, targeted drug delivery, and advanced sensing applications.
+                    </p>
+                </div>
+                <div class="bg-white rounded-2xl smooth-shadow border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-300">
+                        <i class="ph-fill ph-virus text-3xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-accent transition-colors">Nanomedicine & Theranostics</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Developing targeted nanoparticle systems for simultaneous precision imaging and therapy (theranostics) of cancer and other complex diseases using stimuli-responsive smart materials.
+                    </p>
+                </div>
+                <div class="bg-white rounded-2xl smooth-shadow border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-purple-600 transition-all duration-300">
+                        <i class="ph-fill ph-lightbulb-filament text-3xl text-purple-600 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">Fluorescent Probes</h3>
+                    <p class="text-gray-600 leading-relaxed text-sm">
+                        Engineering novel organic fluorophores and AIEgens for organelle-specific cellular imaging, biophysical investigations, and real-time monitoring of fundamental biological processes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-24 relative bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">Our People</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Meet the Team
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex flex-wrap justify-center gap-2 mb-12 border-b border-gray-200 pb-2">
+                <button class="tab-btn active px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors focus:outline-none" data-tab="tab-pi">Principal Investigator</button>
+                <button class="tab-btn px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors focus:outline-none" data-tab="tab-current">Current Members</button>
+                <button class="tab-btn px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors focus:outline-none" data-tab="tab-alumni">Alumni</button>
+                <button class="tab-btn px-6 py-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors focus:outline-none" data-tab="tab-collab">Collaborators</button>
+            </div>
+
+            <!-- PI Tab -->
+            <div id="tab-pi" class="tab-content active">
+                <div class="bg-white rounded-2xl border border-gray-100 p-8 smooth-shadow flex flex-col md:flex-row gap-8 items-center md:items-start max-w-5xl mx-auto">
+                    <div class="w-56 h-56 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-primary-50 shadow-inner">
+                        <img src="https://dsahoo78-creator.github.io/alk.jpeg" alt="Dr. Apurba L. Koner" class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="text-center md:text-left flex-grow">
+                        <h3 class="text-3xl font-bold text-gray-900 mb-1">Dr. Apurba L. Koner</h3>
+                        <p class="text-primary-600 font-semibold mb-5 text-lg">Professor, Department of Chemistry, IISER Bhopal</p>
+                        
+                        <p class="text-gray-600 leading-relaxed mb-8 text-sm">
+                            Dr. Koner leads the BioNat Laboratory at IISER Bhopal. His interdisciplinary research focuses on the intersection of supramolecular chemistry, fluorescent probes, and nanomedicine. He is dedicated to developing novel biomaterials for targeted drug delivery, cellular imaging, and sensing applications, while mentoring the next generation of scientific innovators.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">Contact</h4>
+                                <address class="text-gray-600 text-sm not-italic leading-relaxed">
+                                    Department of Chemistry<br>
+                                    Indian Institute of Science Education and Research (IISER) Bhopal<br>
+                                    Bhopal Bypass Road, Bhauri<br>
+                                    Bhopal 462066, Madhya Pradesh, India
+                                </address>
+                                <div class="flex flex-col mt-3 space-y-2">
+                                    <a href="mailto:akoner@iiserb.ac.in" class="inline-flex items-center text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors">
+                                        <i class="ph-bold ph-envelope mr-2 text-lg"></i> akoner@iiserb.ac.in
+                                    </a>
+                                    <a href="tel:+917552691335" class="inline-flex items-center text-sm font-bold text-primary-600 hover:text-primary-700 transition-colors">
+                                        <i class="ph-bold ph-phone mr-2 text-lg"></i> +91-755-2691335
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold text-gray-900 mb-3 text-sm uppercase tracking-wider">Academic Profiles</h4>
+                                <div class="flex flex-col space-y-3">
+                                    <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors group">
+                                        <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center mr-3 group-hover:bg-primary-50 transition-colors"><i class="ph-bold ph-graduation-cap text-lg text-gray-500 group-hover:text-primary-600"></i></div> Google Scholar
+                                    </a>
+                                    <a href="https://www.linkedin.com/in/apurba-koner-92b53113b/" target="_blank" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors group">
+                                        <div class="w-8 h-8 rounded bg-blue-50 flex items-center justify-center mr-3 group-hover:bg-blue-100 transition-colors"><i class="ph-bold ph-linkedin-logo text-lg text-blue-600"></i></div> LinkedIn Profile
+                                    </a>
+                                    <a href="https://orcid.org/0000-0002-8891-416X" target="_blank" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors group">
+                                        <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center mr-3 group-hover:bg-primary-50 transition-colors"><i class="ph-bold ph-identification-card text-lg text-gray-500 group-hover:text-primary-600"></i></div> ORCID ID
+                                    </a>
+                                    <a href="https://vapt3.irins.org/profile/210200" target="_blank" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors group">
+                                        <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center mr-3 group-hover:bg-primary-50 transition-colors"><i class="ph-bold ph-book-open-text text-lg text-gray-500 group-hover:text-primary-600"></i></div> Vidwan Profile
+                                    </a>
+                                    <a href="https://1drv.ms/b/c/C21748B955C483B1/IQAEbBzSab62Sb2U9ROkAQskAZRf1McLemB_G_tig884NiY?e=HiZf60" target="_blank" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors group mt-1">
+                                        <div class="w-8 h-8 rounded bg-red-50 flex items-center justify-center mr-3 group-hover:bg-red-100 transition-colors"><i class="ph-bold ph-file-pdf text-lg text-red-500"></i></div> Download CV
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Tab -->
+            <div id="tab-current" class="tab-content">
+                <div class="max-w-6xl mx-auto space-y-16">
+                    
+                    <!-- Postdoctoral Fellows -->
+                    <div>
+                        <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ph-bold ph-microscope text-2xl text-blue-600"></i>
+                            </div>
+                            <h4 class="text-2xl font-bold text-gray-900">Postdoctoral Fellows</h4>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <!-- Dr. Dhananjaya Sahoo -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Dr. Dhananjaya Sahoo</h5>
+                                    <p class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Postdoctoral Fellow</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong>Development of rylene dye derivatives for their potential application photothermal therapy and pi-conjugated fluorescent probes for bioimaging</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:dhananjayasahoo@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> dhananjayasahoo@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="https://www.linkedin.com/in/dhananjaya-sahoo-132ba925/" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors" title="LinkedIn"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-400 transition-colors" title="Social Media"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/dsahoo.png" alt="Dr. Dhananjaya Sahoo" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Dr. Rajkumar Imocha Singh -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Dr. Rajkumar Imocha Singh</h5>
+                                    <p class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Postdoctoral Fellow</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:imocharajkumar@gmail.com" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> imocharajkumar@gmail.com</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="https://www.linkedin.com/in/rajkumar-imocha-singh-72349850/" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors" title="LinkedIn"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="https://x.com/imocha_rajkumar" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-400 transition-colors" title="Social Media"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/rimocha.jpeg" alt="Dr. Rajkumar Imocha Singh" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Rajdeep Tyagi -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Dr. Rajdeep Tyagi</h5>
+                                    <p class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Postdoctoral Fellow</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:rajdeeptyagi@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> rajdeeptyagi@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="https://www.linkedin.com/in/rajdeep-tyagi-5511ab114/" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors" title="LinkedIn"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-blue-50 hover:text-blue-400 transition-colors" title="Social Media"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://placehold.co/200x200/3b82f6/ffffff?text=RT" alt="Dr. Rajdeep Tyagi" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ph.D. Scholars -->
+                    <div>
+                        <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ph-bold ph-student text-2xl text-purple-600"></i>
+                            </div>
+                            <h4 class="text-2xl font-bold text-gray-900">Ph.D. Scholars</h4>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <!-- Ms. Nabashree Chakraborty -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Nabashree Chakraborty</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:nabashree22@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> nabashree22@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/nabashree.jpg" alt="Ms. Nabashree Chakraborty" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Mr. Soumya Ranjan Panda -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mr. Soumya Ranjan Panda</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:soumya23@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> soumya23@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/srp.jpg" alt="Mr. Soumya Ranjan Panda" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Ms Astha Katiyar -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Astha Katiyar</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:astha23@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> astha23@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/akatiya.jpg" alt="Ms. Astha Katiyar" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Ms Ankita Priyadarsini -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Ankita Priyadarsini</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:ankitap23@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> ankitap23@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/apriyadarsini.jpg" alt="Ms. Ankita Priyadarsini" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Ms. Anjali Tomar -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Anjali Tomar</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:anjalit24@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> anjalit24@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/atomar.JPEG" alt="Ms. Anjali Tomar" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Mr. Chand Husen Ansary -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mr. Chand Husen Ansary</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:chand24@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> chand24@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/chand.png" alt="Mr. Chand Husen Ansary" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Ms. Udita Das-->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Udita</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:udita25@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> udita25@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/udas.jpg" alt="Ms. Udita" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Mr. Santanu Mandal -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mr. Santanu Mandal</h5>
+                                    <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> Functional perylene dyes for Self-Assembly and Multifaceted Applications.</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:santanu25@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> santanu25@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="https://www.linkedin.com/in/santanu-mandal-aa431a245/" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="https://x.com/SANTANU03422222" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/smandal.jpg" alt="Mr. Santanu Mandal" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        
+                            <!-- Ms. Sukanya Chatterjee -->
+                                    <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                        <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                            <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Sukanya Chakraborty</h5>
+                                            <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Ph.D. Scholar</p>
+                                            <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                            <div class="flex flex-col space-y-2">
+                                                <a href="mailto:sukanya26@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> sukanya26@iiserb.ac.in</a>
+                                                <div class="flex space-x-3 mt-2">
+                                                    <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                                    <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-purple-50 hover:text-purple-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                            <img src="https://dsahoo78-creator.github.io/sukanya.jpeg" alt="Ms. Sukanya Chakraborty" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                    </div>
+                
+                    <!-- BS-MS / M.Sc. Students -->
+                    <div>
+                        <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
+                                <i class="ph-bold ph-book-open text-2xl text-emerald-600"></i>
+                            </div>
+                            <h4 class="text-2xl font-bold text-gray-900">BS-MS / M.Sc. Students</h4>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            
+                            <!-- Ms Apurva Goyal -->
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                    <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Ms. Apurva Goyal</h5>
+                                    <p class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">M.Sc. Student</p>
+                                    <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                    <div class="flex flex-col space-y-2">
+                                        <a href="mailto:apurva25@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> apurva25@iiserb.ac.in</a>
+                                        <div class="flex space-x-3 mt-2">
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                            <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                    <img src="https://dsahoo78-creator.github.io/agoyal.jpg" alt="Ms. Apurva Goyal" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                       
+                            <!-- Mr. Divyansh Garg -->
+                                <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                                    <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                        <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mr. Divyansh Garg</h5>
+                                        <p class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">BSMS Student</p>
+                                        <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                        <div class="flex flex-col space-y-2">
+                                            <a href="mailto:divyanshg22@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> apurva25@iiserb.ac.in</a>
+                                            <div class="flex space-x-3 mt-2">
+                                                <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                                <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-emerald-50 hover:text-emerald-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                        <img src="https://dsahoo78-creator.github.io/divyans.jpeg" alt="Mr. Divyansh Garg" class="w-full h-full object-cover">
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                <!-- Project Staff -->
+                <div>
+                    <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="ph-bold ph-flask text-2xl text-amber-600"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">Project Staff</h4>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        
+                        <!-- Mr. Sorabh -->
+                        <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow hover:shadow-lg transition-all flex flex-col sm:flex-row gap-6 items-center sm:items-start group">
+                            <div class="flex-grow text-left order-2 sm:order-1 w-full">
+                                <h5 class="text-lg font-bold text-gray-900 group-hover:text-primary-600 transition-colors">Mr. Sorabh</h5>
+                                <p class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full mb-3 inline-block mt-1">Project Staff</p>
+                                <p class="text-sm text-gray-600 mb-3 leading-relaxed"><strong>Research Interest:</strong> [Add research interest here]</p>
+                                <div class="flex flex-col space-y-2">
+                                    <a href="mailto:sorabh@iiserb.ac.in" class="text-sm text-gray-500 hover:text-primary-600 flex items-center transition-colors truncate"><i class="ph-fill ph-envelope mr-2 text-primary-500"></i> sorabh@iiserb.ac.in</a>
+                                    <div class="flex space-x-3 mt-2">
+                                        <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-amber-50 hover:text-amber-600 transition-colors"><i class="ph-fill ph-linkedin-logo text-lg"></i></a>
+                                        <a href="#" target="_blank" class="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-amber-50 hover:text-amber-400 transition-colors"><i class="ph-fill ph-twitter-logo text-lg"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 border-4 border-gray-50 order-1 sm:order-2 shadow-inner">
+                                <img src="https://dsahoo78-creator.github.io/sorbh.png" alt="Mr. Sorabh" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+            <!-- Alumni Tab (Split into 4 Categories) -->
+            <div id="tab-alumni" class="tab-content">
+                <div class="max-w-7xl mx-auto space-y-16">
+                    <div class="text-center max-w-3xl mx-auto mb-10">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Our Proud Alumni</h3>
+                        <p class="text-sm text-gray-600">Alumni who have graduated and pursued successful careers across the globe.</p>
+                    </div>
+
+                    <!-- 1. Postdoctoral Alumni -->
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2 flex items-center">
+                            <i class="ph-bold ph-certificate text-primary-600 mr-2"></i> Postdoctoral Alumni
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Abhijit Karmakar</h5>
+                                <p class="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full inline-block my-1">Postdoc (2023-2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / IIT Guwahati</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Naveneet Dubey</h5>
+                                <p class="text-xs font-semibold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full inline-block my-1">Postdoc (2023-2025)</p>
+                                <p class="text-sm text-gray-600">Current: Guest faculty / RGPV, Bhopal</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Ph.D. Alumni -->
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2 flex items-center">
+                            <i class="ph-bold ph-student text-purple-600 mr-2"></i> Ph.D. Alumni
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Sukumol Bhunia</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Researcher</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Barsha Chakraborty</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / France</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Oendrila Chatterjee</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. P. Kavyashree</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / India</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Aasif Khan</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / USA</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Akshay Silswal</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / USA</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Tanoy Dutta</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / USA</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Rupam Roy</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / USA</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Prashant Kumar</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2020)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / UK</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Vikas Sharma</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2019)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / UK</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Falguni Chandra</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2018)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / France</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Kaushik Pal</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2018)</p>
+                                <p class="text-sm text-gray-600">Current: Asst. Prof. / IIT Tirupati</p>
+                            </div>
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">Dr. Suman Mallick</h5>
+                                <p class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full inline-block my-1">Ph.D. (2025)</p>
+                                <p class="text-sm text-gray-600">Current: Postdoc / Austria</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. BS-MS / M.Sc. Alumni -->
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2 flex items-center">
+                            <i class="ph-bold ph-book-open text-emerald-600 mr-2"></i> BS-MS / M.Sc. Alumni
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">[Alumni Name]</h5>
+                                <p class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full inline-block my-1">BS-MS (2025)</p>
+                                <p class="text-sm text-gray-600">Current Position / Institution</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Project / Intern Alumni -->
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-6 border-b border-gray-200 pb-2 flex items-center">
+                            <i class="ph-bold ph-flask text-amber-600 mr-2"></i> Project Staff & Intern Alumni
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow">
+                                <h5 class="text-base font-bold text-gray-900">[Intern/Staff Name]</h5>
+                                <p class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block my-1">Project Staff / Intern</p>
+                                <p class="text-sm text-gray-600">Current Position / Organization</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Collaborators Tab -->
+            <div id="tab-collab" class="tab-content">
+                <div class="max-w-7xl mx-auto">
+                    <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                        <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="ph-bold ph-handshake text-2xl text-indigo-600"></i>
+                        </div>
+                        <h4 class="text-2xl font-bold text-gray-900">Our Collaborators</h4>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-xl border border-gray-100 p-6 smooth-shadow flex items-start gap-4">
+                            <div class="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="ph-bold ph-user text-xl text-indigo-600"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-lg font-bold text-gray-900 leading-tight">[Collaborator Name]</h5>
+                                <p class="text-sm text-gray-600 font-medium mt-1">[Department Name]</p>
+                                <p class="text-sm text-gray-500">[Institution Name]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outreach & Group Activities Section -->
+    <section id="outreach" class="py-24 relative bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">Beyond the Bench</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Outreach & Group Activities
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                    Science is a collaborative journey. We actively participate in conferences, community outreach, and team-building activities to foster a vibrant and inclusive lab culture.
+                </p>
+            </div>
+
+            <!-- Masonry-style Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Activity Card 1 -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://placehold.co/600x400/2563eb/ffffff?text=Group+Photo" alt="Group Photo" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-primary-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">2026</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Lab Retreat & Brainstorming</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Our annual group retreat where we discuss future research directions, share ideas, and unwind away from the bench.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Activity Card 2 -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://placehold.co/600x400/10b981/ffffff?text=Conference" alt="Conference" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-accent text-xs font-bold px-3 py-1 rounded-full shadow-sm">2025</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">International Conference</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Lab members presenting their latest findings on supramolecular chemistry and nanomedicine to the global scientific community.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Activity Card 3 (Fixed Farewell Section with Side-by-Side Images) -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 grid grid-cols-2 gap-1 bg-gray-200 overflow-hidden relative">
+                        <img src="https://dsahoo78-creator.github.io/2026fgp1.jpeg" alt="Farewell 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/300x400/8b5cf6/ffffff?text=Farewell+1'">
+                        <img src="https://dsahoo78-creator.github.io/2026fgp2.jpeg" alt="Farewell 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/300x400/8b5cf6/ffffff?text=Farewell+2'">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-purple-600 text-xs font-bold px-3 py-1 rounded-full shadow-sm z-10">2026</div>
+                    </div>
+                     <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Graduating Batch Farewell</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Celebrating the hard work, thesis defenses, and successful graduation of our senior Ph.D. scholars and BS-MS students.
+                         </p>
+                     </div>
+                </div>
+
+                <!-- Activity Card 4 -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://placehold.co/600x400/f59e0b/ffffff?text=Outreach" alt="Outreach" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-amber-600 text-xs font-bold px-3 py-1 rounded-full shadow-sm">2024</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Science Outreach Day</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Demonstrating fun chemistry experiments to local school students to spark their interest in basic sciences and research.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Activity Card 5 -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://placehold.co/600x400/ec4899/ffffff?text=Celebration" alt="Celebration" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-pink-600 text-xs font-bold px-3 py-1 rounded-full shadow-sm">Ongoing</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Festivals & Lab Dinners</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Coming together as a family to celebrate cultural festivals, birthdays, and major publication acceptances.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Activity Card 6 -->
+                <div class="bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 smooth-shadow hover:shadow-xl transition-all duration-300 group">
+                    <div class="h-56 overflow-hidden relative">
+                        <img src="https://placehold.co/600x400/0ea5e9/ffffff?text=Workshops" alt="Workshops" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur text-sky-600 text-xs font-bold px-3 py-1 rounded-full shadow-sm">Ongoing</div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Workshops & Seminars</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Hosting and attending specialized hands-on training sessions on advanced instrumentation and emerging research methodologies.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <p class="text-sm text-gray-500 italic">Replace these placeholder images and text with actual photos and details from your group's activities.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Open Positions Section -->
+    <section id="join" class="py-24 relative bg-gray-50 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">Join the Lab</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Open Positions
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+                <p class="mt-6 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
+                    We are always happy to fuel your interest in science. If you have any query feel free to mail at <a href="mailto:akoner@iiserb.ac.in" class="text-primary-600 font-bold hover:underline transition-colors">akoner@iiserb.ac.in</a>.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Postdoctoral Positions -->
+                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 smooth-shadow hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-indigo-600 transition-all duration-300">
+                        <i class="ph-fill ph-certificate text-3xl text-indigo-600 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">Postdoctoral Positions</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        Candidates with a strong background in relevant research areas are encouraged to email their CV and research interests.
+                    </p>
+                </div>
+
+                <!-- Doctoral Positions -->
+                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 smooth-shadow hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary-600 transition-all duration-300">
+                        <i class="ph-fill ph-student text-3xl text-primary-600 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors">Doctoral Positions</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        We are always looking for bright students with a keen interest to pursue research in Chemistry or Biological Sciences.
+                    </p>
+                </div>
+
+                <!-- Master Projects -->
+                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 smooth-shadow hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-accent transition-all duration-300">
+                        <i class="ph-fill ph-flask text-3xl text-accent group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-accent transition-colors">Master Projects</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        Please see me in person or mail me with your cv at the mentioned Email ID.
+                    </p>
+                </div>
+
+                <!-- Short-term Projects -->
+                <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 smooth-shadow hover:shadow-lg transition-all duration-300 group hover:-translate-y-1">
+                    <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-purple-600 transition-all duration-300">
+                        <i class="ph-fill ph-clock-user text-3xl text-purple-600 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">Short-term Projects</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        Motivated students are requested to mail at the mentioned Email ID.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+       <!-- Intranet Section -->
+    <section id="intranet" class="py-24 relative bg-white border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">Members Only</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Lab Intranet & Booking
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+            </div>
+
+            <!-- Login View -->
+            <div id="intranet-login" class="max-w-md mx-auto bg-gray-50 rounded-2xl p-8 border border-gray-100 shadow-sm text-center">
+                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ph-bold ph-lock-key text-3xl text-primary-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Access Intranet</h3>
+                <p class="text-sm text-gray-600 mb-6">Enter your registered email address to access the instrument booking system.</p>
+                <form id="login-form" class="space-y-4">
+                    <input type="email" id="login-email" required placeholder="name@iiserb.ac.in" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all text-center">
+                    <p id="login-error" class="hidden text-red-500 text-xs font-semibold mt-1"></p>
+                    <button type="submit" id="login-btn" class="w-full bg-primary-600 text-white font-bold py-3 rounded-xl hover:bg-primary-700 transition-colors shadow-md">
+                        Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="intranet-dashboard" class="hidden max-w-5xl mx-auto">
+                <div class="flex justify-between items-center mb-8 bg-gray-50 p-4 rounded-xl border border-gray-100 flex-wrap gap-4">
+                    <div id="welcome-text" class="text-lg font-medium text-gray-800"></div>
+                    <div class="flex space-x-3">
+                        <button id="admin-panel-btn" class="hidden bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors">
+                            <i class="ph-bold ph-users mr-1"></i> Manage Members
+                        </button>
+                        <button id="logout-btn" class="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Panel (Hidden by default) -->
+                <div id="admin-panel" class="hidden mb-8 bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <h4 class="font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">Add New Member</h4>
+                    <form id="add-user-form" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="text" id="new-user-name" required placeholder="Full Name" class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <input type="email" id="new-user-email" required placeholder="Email Address" class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <input type="tel" id="new-user-phone" required placeholder="Phone Number" class="px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm">
+                        <button type="submit" class="bg-primary-600 text-white font-bold py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm">Add Member</button>
+                    </form>
+                    <p id="admin-msg" class="hidden text-sm mt-3"></p>
+                </div>
+
+                <!-- Booking Interface -->
+                <div class="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-lg relative">
+                    <h4 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="ph-bold ph-calendar-plus text-primary-600 mr-2 text-2xl"></i> Instrument Booking
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Instrument</label>
+                            <select id="calendar-instrument" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50 text-sm font-medium cursor-pointer">
+                                <option value="Combiflash">Combiflash</option>
+                                <option value="UV-Vis">UV-Vis</option>
+                                <option value="Fluorimeter">Fluorimeter</option>
+                                <option value="Plate reader">Plate reader</option>
+                                <option value="SDS-PAGE">SDS-PAGE</option>
+                                <option value="Microscope">Microscope</option>
+                                <option value="Cell Culture Biosafety cabinet">Cell Culture Biosafety cabinet</option>
+                                <option value="Bacteria Culture Biosafety cabinet">Bacteria Culture Biosafety cabinet</option>
+                                <option value="RTPCR">RTPCR</option>
+                                <option value="Nanodrop">Nanodrop</option>
+                                <option value="Speed Vac">Speed Vac</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Date</label>
+                            <input type="date" id="calendar-date" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50 text-sm font-medium cursor-pointer">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Book For</label>
+                            <select id="booking-user-select" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50 text-sm font-medium cursor-pointer mb-2">
+                                <!-- Populated dynamically -->
+                            </select>
+                            <input type="text" id="booking-custom-name" placeholder="Enter User Name..." class="hidden w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 bg-gray-50 text-sm font-medium">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 flex items-center justify-between">
+                        <h5 class="font-bold text-gray-800 text-sm">Select 30-min Slots:</h5>
+                        <div class="flex space-x-3 text-xs font-semibold text-gray-600">
+                            <span class="flex items-center"><div class="w-3 h-3 rounded-full bg-[#f0fdf4] border border-[#bbf7d0] mr-1"></div> Available</span>
+                            <span class="flex items-center"><div class="w-3 h-3 rounded-full bg-[#3b82f6] border border-[#2563eb] mr-1"></div> Selected</span>
+                            <span class="flex items-center"><div class="w-3 h-3 rounded-full bg-[#fef2f2] border border-[#fecaca] mr-1"></div> Booked</span>
+                        </div>
+                    </div>
+
+                    <!-- 48-slot Grid -->
+                    <div id="calendar-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 mb-8 h-64 overflow-y-auto p-2 border border-gray-100 rounded-xl bg-gray-50">
+                        <!-- Slots injected by JS -->
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button id="confirm-booking-btn" class="hidden bg-primary-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-primary-700 transition-colors shadow-md items-center">
+                            Confirm Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Facilities Section -->
+    <section id="facilities" class="py-24 relative bg-gray-50 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-2 block">Infrastructure</span>
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 inline-block relative">
+                    Lab Facilities
+                </h2>
+                <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
+            </div>
+
+            <div class="space-y-16">
+                <!-- In Our Laboratory -->
+                <div>
+                    <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                        <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="ph-bold ph-microscope text-2xl text-primary-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">In Our Laboratory</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Photoreactor (Luzchem)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Nano-microvolume spectrophotometer (Bibby Scientific)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Shaking incubator for bacterial culture (Infors)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Bio-safety cabinet for tissue culture (Nuaire Inc.)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Humidity-controlled CO2 incubator (Nuaire Inc.)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Refrigerated centrifuge (Eltek)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Deep freezer (-20˚C, Elanpro and -80˚C, Haier)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Rotary evaporator (Buchi)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Polymerase Chain Reaction machine (BR Biochem.)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Vertical Pressure Steam Sterilizer LDZX-75KBS</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Shimadzu UV-1800 Spectrophotometer</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-primary-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-accent mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Zeiss Stemi 305 Stereo Zoom Microscope</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CIF -->
+                <div>
+                    <div class="flex items-center mb-8 border-b border-gray-200 pb-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                            <i class="ph-bold ph-buildings text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900">Central Instrumental Facility</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">400, 500 and 700 MHz NMR Spectrometers (Bruker)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">High-Resolution Mass Spectrometer (UPLCMS) (Bruker)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">GCMS (Agilent)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">MALDI-TOF (Bruker)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Physical Property Measurement System (PPMS & MPMS)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Nano & Femtosecond lasers (Spectra-Physics)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Single crystal X-ray diffraction facility (Bruker)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Powder X-ray diffractometer (PANalytical Empyrean)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Surface area and gas adsorption measurement set up (BELSORP-MAX)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Superconducting Quantum Interference Device (SQUID)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Gel permeation chromatographer (Agilent PL-GPC50)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Fluorimeter (Fluorolog, Horiba Jobin Yvon)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Time-Correlated Single Photon Counting (TCSPC) unit</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">UV-Vis. spectrophotometer (Perkin Elmer)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">UV-Vis.-NIR spectrophotometer (Cary)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">IR Spectrometers (Shimadzu & Perkin Elmer)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Circular Dichroism Spectrometer (Jasco)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Electron paramagnetic resonance (EPR) spectrometer (Bruker)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Electrochemical workstation (CHI)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">High-resolution field emission scanning electron microscope (Zeiss)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">High-resolution transmission electron microscope (TALOS 200S)</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Laser scanning confocal microscope Zeiss LSM 700</span>
+                        </div>
+                        <div class="flex items-start bg-white p-4 rounded-xl border border-gray-100 smooth-shadow hover:shadow-md hover:border-purple-200 transition-all group">
+                            <i class="ph-fill ph-check-circle text-purple-500 mt-0.5 mr-3 text-xl flex-shrink-0 group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm font-medium text-gray-800 leading-snug">Olympus FV3000 Confocal Laser Scanning Microscope</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-16 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-primary-600 rounded mr-3 flex items-center justify-center">
+                            <i class="ph-bold ph-dna text-xl text-white"></i>
+                        </div>
+                        <span class="font-bold text-2xl text-white tracking-tight">BioNano Lab</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-6 max-w-sm leading-relaxed">
+                        Department of Chemistry<br>
+                        Indian Institute of Science Education and Research (IISER) Bhopal<br>
+                        Bhopal Bypass Road, Bhauri, Bhopal 462066, MP, India.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="mailto:akoner@iiserb.ac.in" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors">
+                            <i class="ph-fill ph-envelope text-xl"></i>
+                        </a>
+                        <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors">
+                            <i class="ph-fill ph-graduation-cap text-xl"></i>
+                        </a>
+                        <a href="https://www.iiserb.ac.in" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary-600 hover:text-white transition-colors">
+                            <i class="ph-fill ph-globe text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Quick Links</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#home" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Home</a></li>
+                        <li><a href="#research" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Research</a></li>
+                        <li><a href="#facilities" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Facilities</a></li>
+                        <li><a href="#publications" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Publications</a></li>
+                        <li><a href="#team" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Team</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-bold mb-6 uppercase tracking-wider text-sm">Resources</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#outreach" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Outreach</a></li>
+                        <li><a href="#join" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Open Positions</a></li>
+                        <li><a href="#intranet" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Lab Intranet</a></li>
+                        <li><a href="https://chm.iiserb.ac.in/" target="_blank" class="hover:text-primary-400 transition-colors flex items-center"><i class="ph-bold ph-caret-right text-gray-600 mr-2"></i> Dept. of Chemistry</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-xs text-gray-500 mb-4 md:mb-0">
+                    &copy; 2026 BioNat Laboratory, IISER Bhopal. All rights reserved.
+                </p>
+                <p class="text-xs text-gray-600 font-mono">
+                    Designed for Web
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Chatbot Floating Button -->
+    <button id="ai-chat-toggle" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary-600 to-accent text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform duration-300 z-[60] focus:outline-none">
+        <i class="ph-bold ph-sparkle text-2xl"></i>
+    </button>
+
+    <!-- AI Chatbot Window -->
+    <div id="ai-chat-window" class="hidden fixed bottom-24 right-6 w-80 sm:w-96 bg-white rounded-2xl chat-window flex-col z-[60] border border-gray-100 overflow-hidden">
+        <div class="bg-gradient-to-r from-primary-600 to-primary-800 p-4 flex justify-between items-center">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3 backdrop-blur-sm">
+                    <i class="ph-fill ph-robot text-white text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-white font-bold text-sm">BioNat AI Assistant</h3>
+                    <p class="text-primary-100 text-xs">Powered by Gemini</p>
+                </div>
+            </div>
+            <button id="close-chat-btn" class="text-white hover:text-gray-200 focus:outline-none">
+                <i class="ph-bold ph-x text-lg"></i>
+            </button>
+        </div>
+        
+        <div id="chat-messages" class="p-4 h-80 overflow-y-auto bg-gray-50 flex flex-col space-y-3">
+            <div class="flex items-start">
+                <div class="w-6 h-6 rounded-full bg-primary-100 flex-shrink-0 flex items-center justify-center mt-1 mr-2">
+                    <i class="ph-fill ph-robot text-primary-600 text-xs"></i>
+                </div>
+                <div class="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none text-sm text-gray-700 shadow-sm">
+                    Hello! I'm the BioNat Lab AI assistant. Ask me about our research, team, or publications!
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3 bg-white border-t border-gray-100 flex items-center">
+            <input type="text" id="chat-input" class="flex-grow px-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all" placeholder="Ask a question...">
+            <button id="send-chat-btn" class="ml-2 w-9 h-9 rounded-full bg-primary-600 text-white flex items-center justify-center hover:bg-primary-700 transition-colors focus:outline-none">
+                <i class="ph-bold ph-paper-plane-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'bionano-lab-app';
+        let firebaseConfig;
+        try {
+            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        } catch (e) {
+            console.error("Invalid firebase config", e);
+            firebaseConfig = {};
+        }
+
+        let app, db, auth;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+        } catch(e) {
+            console.error("Firebase init failed:", e);
+        }
+
+        let currentUserData = null;
+        let allBookings = [];
+        let allUsers = [];
+        let pendingSlotSelections = [];
+        let unsubscribeBookings = null;
+        let unsubscribeNotifications = null;
+        
+        const dateInput = document.getElementById('calendar-date');
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 7);
+
+        if (dateInput) {
+            dateInput.min = today.toISOString().split('T')[0];
+            dateInput.max = maxDate.toISOString().split('T')[0];
+            dateInput.value = today.toISOString().split('T')[0];
+        }
+
+        const loginView = document.getElementById('intranet-login');
+        const dashboardView = document.getElementById('intranet-dashboard');
+        const loginForm = document.getElementById('login-form');
+        const loginBtn = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
+        const welcomeText = document.getElementById('welcome-text');
+        const adminPanelBtn = document.getElementById('admin-panel-btn');
+        const adminPanel = document.getElementById('admin-panel');
+        const addUserForm = document.getElementById('add-user-form');
+        const calendarGrid = document.getElementById('calendar-grid');
+        const confirmBtn = document.getElementById('confirm-booking-btn');
+        const instSelect = document.getElementById('calendar-instrument');
+
+        function populateUserDropdown() {
+            const userSelect = document.getElementById('booking-user-select');
+            if(!userSelect || !currentUserData) return;
+            
+            userSelect.innerHTML = '';
+            userSelect.add(new Option(`Self (${currentUserData.name})`, currentUserData.email));
+            
+            allUsers.forEach(u => {
+                if(u.email !== currentUserData.email) {
+                    userSelect.add(new Option(`${u.name} (${u.email})`, u.email));
+                }
+            });
+            
+            userSelect.add(new Option('Other (Enter User Name)', 'custom'));
+        }
+
+        document.getElementById('booking-user-select')?.addEventListener('change', (e) => {
+            const customInput = document.getElementById('booking-custom-name');
+            if(e.target.value === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                customInput.classList.add('hidden');
+            }
+        });
+
+        async function initFirebase() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                await fetchUsersOnce();
+            } catch (error) {
+                console.error("Authentication Error:", error);
+                loginError.innerText = "System connection failed. Please try again later.";
+                loginError.classList.remove('hidden');
+            }
+        }
+        
+        initFirebase();
+
+        function getUsersCollection() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'bionano_users');
+        }
+        function getBookingsCollection() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'bionano_bookings');
+        }
+        function getAlertsCollection() {
+            return collection(db, 'artifacts', appId, 'public', 'data', 'bionano_alerts');
+        }
+
+        async function fetchUsersOnce() {
+            const usersSnapshot = await getDocs(getUsersCollection());
+            allUsers = usersSnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            if (allUsers.length === 0 && auth.currentUser) {
+                try {
+                    await addDoc(getUsersCollection(), {
+                        name: "Lab Administrator",
+                        email: "admin@bionat.in",
+                        phone: "0000000000",
+                        role: "admin"
+                    });
+                    const newSnap = await getDocs(getUsersCollection());
+                    allUsers = newSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                } catch(e) {
+                    console.log("Could not auto-create admin");
+                }
+            }
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!auth.currentUser) return;
+            
+            loginBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-2"></i> Verifying...';
+            await fetchUsersOnce();
+            
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const user = allUsers.find(u => u.email.toLowerCase() === email);
+
+            loginBtn.innerHTML = 'Access Intranet';
+
+            if (user) {
+                currentUserData = user;
+                loginView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+                welcomeText.innerHTML = `Welcome back, <span class="text-primary-600">${user.name}</span>`;
+                
+                if (user.role === 'admin') {
+                    adminPanelBtn.classList.remove('hidden');
+                } else {
+                    adminPanelBtn.classList.add('hidden');
+                    adminPanel.classList.add('hidden');
+                }
+
+                populateUserDropdown();
+                startLiveSync();
+                renderCalendar();
+            } else {
+                loginError.innerText = "Email not found in authorized members list. (Hint: use admin@bionano.lab)";
+                loginError.classList.remove('hidden');
+                document.getElementById('login-email').classList.add('border-red-500', 'bg-red-50');
+                setTimeout(() => {
+                    document.getElementById('login-email').classList.remove('border-red-500', 'bg-red-50');
+                }, 1000);
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            currentUserData = null;
+            dashboardView.classList.add('hidden');
+            loginView.classList.remove('hidden');
+            loginForm.reset();
+            if(unsubscribeBookings) unsubscribeBookings();
+            if(unsubscribeNotifications) unsubscribeNotifications();
+        });
+
+        adminPanelBtn.addEventListener('click', () => {
+            adminPanel.classList.toggle('hidden');
+        });
+
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!auth.currentUser || currentUserData?.role !== 'admin') return;
+
+            const name = document.getElementById('new-user-name').value;
+            const email = document.getElementById('new-user-email').value;
+            const phone = document.getElementById('new-user-phone').value;
+            const msgEl = document.getElementById('admin-msg');
+
+            try {
+                await addDoc(getUsersCollection(), { name, email, phone, role: 'member' });
+                await fetchUsersOnce();
+                populateUserDropdown();
+                
+                msgEl.innerText = `${name} successfully added to the system.`;
+                msgEl.className = "text-xs font-semibold mt-3 text-emerald-600";
+                msgEl.classList.remove('hidden');
+                addUserForm.reset();
+                setTimeout(() => msgEl.classList.add('hidden'), 3000);
+            } catch (err) {
+                msgEl.innerText = "Error adding user.";
+                msgEl.className = "text-xs font-semibold mt-3 text-red-600";
+                msgEl.classList.remove('hidden');
+            }
+        });
+
+        function startLiveSync() {
+            unsubscribeBookings = onSnapshot(
+                query(getBookingsCollection()), 
+                (snapshot) => {
+                    allBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    validatePendingSelections();
+                    renderCalendar();
+                },
+                (error) => console.error("Bookings sync error:", error)
+            );
+
+            let isFirstLoad = true;
+            unsubscribeNotifications = onSnapshot(
+                query(getAlertsCollection()),
+                (snapshot) => {
+                    if (isFirstLoad) {
+                        isFirstLoad = false;
+                        return;
+                    }
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === "added") {
+                            const alert = change.doc.data();
+                            if (alert.triggerEmail !== currentUserData.email) {
+                                showToastAlert(alert.message);
+                            }
+                        }
+                    });
+                }
+            );
+        }
+
+        const timeSlots = [];
+        for(let h=0; h<24; h++) {
+            const hs = h.toString().padStart(2, '0');
+            timeSlots.push(`${hs}:00`);
+            timeSlots.push(`${hs}:30`);
+        }
+
+        function renderCalendar() {
+            calendarGrid.innerHTML = '';
+            
+            const selDate = dateInput.value;
+            const selInst = instSelect.value;
+            
+            const viewBookings = allBookings.filter(b => b.date === selDate && b.instrument === selInst);
+
+            timeSlots.forEach(time => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot flex flex-col justify-center items-center p-2 rounded-lg text-sm font-semibold select-none';
+                
+                const booking = viewBookings.find(b => b.timeSlot === time);
+                
+                if (booking) {
+                    if (booking.userEmail === currentUserData.email || booking.creatorEmail === currentUserData.email || currentUserData.role === 'admin') {
+                        slotDiv.classList.add('slot-mine');
+                        slotDiv.innerHTML = `
+                            <span>${time}</span>
+                            <span class="text-[10px] font-bold mt-0.5 opacity-80 truncate w-full px-1 text-center" title="${booking.userName}">${booking.userName}</span>
+                            <button class="delete-slot-btn mt-1 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-full w-5 h-5 flex items-center justify-center text-xs" data-id="${booking.id}" data-time="${time}" title="Cancel Slot">
+                                <i class="ph-bold ph-x"></i>
+                            </button>
+                        `;
+                    } else {
+                        slotDiv.classList.add('slot-booked', 'booked');
+                        slotDiv.innerHTML = `
+                            <span class="line-through">${time}</span>
+                            <span class="text-[10px] font-bold mt-0.5 truncate w-full px-1 text-center" title="${booking.userName}">${booking.userName}</span>
+                        `;
+                    }
+                } else {
+                    if (pendingSlotSelections.includes(time)) {
+                        slotDiv.classList.add('slot-selected');
+                        slotDiv.innerHTML = `<span>${time}</span><i class="ph-bold ph-check text-xs mt-1"></i>`;
+                    } else {
+                        slotDiv.classList.add('slot-available');
+                        slotDiv.innerHTML = `<span>${time}</span>`;
+                    }
+                    
+                    slotDiv.addEventListener('click', () => toggleSlotSelection(time));
+                }
+                
+                calendarGrid.appendChild(slotDiv);
+            });
+
+            document.querySelectorAll('.delete-slot-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteBooking(btn.getAttribute('data-id'), btn.getAttribute('data-time'));
+                });
+            });
+
+            if (pendingSlotSelections.length > 0) {
+                confirmBtn.classList.remove('hidden');
+                confirmBtn.classList.add('inline-flex');
+            } else {
+                confirmBtn.classList.add('hidden');
+                confirmBtn.classList.remove('inline-flex');
+            }
+        }
+
+        function toggleSlotSelection(time) {
+            const idx = pendingSlotSelections.indexOf(time);
+            if (idx > -1) {
+                pendingSlotSelections.splice(idx, 1);
+            } else {
+                pendingSlotSelections.push(time);
+            }
+            renderCalendar();
+        }
+
+        function validatePendingSelections() {
+            const selDate = dateInput.value;
+            const selInst = instSelect.value;
+            const viewBookings = allBookings.filter(b => b.date === selDate && b.instrument === selInst);
+            
+            pendingSlotSelections = pendingSlotSelections.filter(time => {
+                return !viewBookings.some(b => b.timeSlot === time);
+            });
+        }
+
+        dateInput.addEventListener('change', () => { pendingSlotSelections = []; renderCalendar(); });
+        instSelect.addEventListener('change', () => { pendingSlotSelections = []; renderCalendar(); });
+
+        confirmBtn.addEventListener('click', async () => {
+            if(!auth.currentUser || pendingSlotSelections.length === 0) return;
+            
+            const btnOriginalHtml = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-2"></i> Booking...';
+            confirmBtn.disabled = true;
+
+            const date = dateInput.value;
+            const instrument = instSelect.value;
+            
+            const userSelect = document.getElementById('booking-user-select');
+            const customInput = document.getElementById('booking-custom-name');
+            
+            let targetEmail = currentUserData.email;
+            let targetName = currentUserData.name;
+            
+            if (userSelect && userSelect.value === 'custom') {
+                const enteredName = customInput.value.trim();
+                if (!enteredName) {
+                    showToastAlert("Please enter a name for the custom booking.");
+                    confirmBtn.innerHTML = btnOriginalHtml;
+                    confirmBtn.disabled = false;
+                    return;
+                }
+                targetName = enteredName;
+                targetEmail = currentUserData.email;
+            } else if (userSelect && userSelect.value !== currentUserData.email) {
+                targetEmail = userSelect.value;
+                const targetUser = allUsers.find(u => u.email === targetEmail);
+                if (targetUser) targetName = targetUser.name;
+            }
+            
+            try {
+                const promises = pendingSlotSelections.map(time => {
+                    return addDoc(getBookingsCollection(), {
+                        instrument: instrument,
+                        date: date,
+                        timeSlot: time,
+                        userEmail: targetEmail,
+                        userName: targetName,
+                        creatorEmail: currentUserData.email,
+                        timestamp: Date.now()
+                    });
+                });
+                
+                await Promise.all(promises);
+                pendingSlotSelections = [];
+                
+            } catch (e) {
+                console.error("Error booking:", e);
+                showToastAlert("Error confirming booking. Please try again.");
+            } finally {
+                confirmBtn.innerHTML = btnOriginalHtml;
+                confirmBtn.disabled = false;
+                renderCalendar();
+            }
+        });
+
+        async function deleteBooking(docId, time) {
+            if(!auth.currentUser) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'bionano_bookings', docId));
+                
+                const dateStr = new Date(dateInput.value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                await addDoc(getAlertsCollection(), {
+                    triggerEmail: currentUserData.email,
+                    message: `Slot available: ${instSelect.value} at ${time} on ${dateStr}`,
+                    timestamp: Date.now()
+                });
+
+            } catch (e) {
+                console.error("Error deleting slot:", e);
+            }
+        }
+
+        function showToastAlert(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast bg-white border-l-4 border-accent p-4 rounded shadow-lg flex items-start max-w-xs';
+            toast.innerHTML = `
+                <div class="bg-emerald-100 rounded-full p-1 mr-3 flex-shrink-0">
+                    <i class="ph-fill ph-bell-ringing text-accent text-lg"></i>
+                </div>
+                <div>
+                    <h5 class="text-sm font-bold text-gray-900 mb-0.5">Availability Alert</h5>
+                    <p class="text-xs text-gray-600">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        const menuIcon = btn.querySelector('i');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+            if (menu.classList.contains('hidden')) {
+                menuIcon.classList.replace('ph-x', 'ph-list');
+            } else {
+                menuIcon.classList.replace('ph-list', 'ph-x');
+            }
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+                menuIcon.classList.replace('ph-x', 'ph-list');
+            });
+        });
+
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-md');
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+            } else {
+                navbar.classList.remove('shadow-md');
+                navbar.style.background = 'rgba(255, 255, 255, 0.85)';
+            }
+        });
+
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+            });
+        });
+
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        let currentItem = 0;
+        if(carouselItems.length > 0) {
+            setInterval(() => {
+                carouselItems[currentItem].classList.remove('active');
+                currentItem = (currentItem + 1) % carouselItems.length;
+                carouselItems[currentItem].classList.add('active');
+            }, 5000);
+        }
+
+        const aiApiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${aiApiKey}`;
+        const sysInstruction = { parts: [{ text: "You are the AI assistant for BioNano Laboratory at IISER Bhopal (Dr. Apurba L. Koner). Answer questions about research, publications, and team. Keep answers concise." }] };
+        let chatHistory = [];
+
+        document.querySelectorAll('#publications .group.flex-col').forEach(card => {
+            const titleEl = card.querySelector('h3');
+            if(!titleEl) return;
+            const titleText = titleEl.innerText;
+            
+            const actionDiv = document.createElement('div');
+            actionDiv.className = 'mt-4';
+            const aiBtn = document.createElement('button');
+            aiBtn.className = 'inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none';
+            aiBtn.innerHTML = '<i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary';
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'hidden mt-3 p-3 bg-purple-50/50 border border-purple-100 rounded-lg text-sm text-gray-700 leading-relaxed';
+            
+            actionDiv.appendChild(aiBtn);
+            card.querySelector('.flex-grow').appendChild(actionDiv);
+            card.querySelector('.flex-grow').appendChild(resultDiv);
+
+            aiBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if(resultDiv.classList.contains('hidden') && resultDiv.innerHTML === '') {
+                    aiBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-1.5"></i> Generating...';
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.innerHTML = '<div class="flex space-x-1 items-center h-4"><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div></div>';
+                    
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: `Explain simply in 2 sentences: "${titleText}"` }] }] })
+                        });
+                        const data = await response.json();
+                        const summary = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (summary) {
+                            resultDiv.innerHTML = `<strong><i class="ph-fill ph-sparkle text-purple-500 mr-1"></i>AI Summary:</strong> ${summary}`;
+                            aiBtn.innerHTML = '<i class="ph-bold ph-check mr-1.5"></i> Summary Generated';
+                            aiBtn.classList.replace('from-purple-500', 'from-emerald-500');
+                            aiBtn.classList.replace('to-indigo-500', 'to-emerald-600');
+                        } else throw new Error();
+                    } catch (err) {
+                        resultDiv.innerHTML = '<span class="text-red-500">Failed to generate summary.</span>';
+                        aiBtn.innerHTML = '<i class="ph-bold ph-sparkle mr-1.5"></i> Try Again';
+                    }
+                } else resultDiv.classList.toggle('hidden');
+            });
+        });
+
+        const chatToggle = document.getElementById('ai-chat-toggle');
+        const chatWindow = document.getElementById('ai-chat-window');
+        const chatInput = document.getElementById('chat-input');
+        const chatMessages = document.getElementById('chat-messages');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+
+        chatToggle.addEventListener('click', () => { chatWindow.classList.replace('hidden','flex'); chatToggle.classList.add('hidden'); chatInput.focus(); });
+        document.getElementById('close-chat-btn').addEventListener('click', () => { chatWindow.classList.replace('flex','hidden'); chatToggle.classList.remove('hidden'); });
+
+        function appendMessage(sender, text) {
+            const div = document.createElement('div');
+            div.className = `flex items-end chat-message ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+            div.innerHTML = sender === 'user' 
+                ? `<div class="bg-primary-600 text-white p-3 rounded-2xl rounded-br-none text-sm shadow-sm max-w-[85%]">${text}</div>`
+                : `<div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2 mb-1"><i class="ph-fill ph-robot text-primary-600 text-xs"></i></div>
+                   <div class="bg-white border border-gray-100 p-3 rounded-2xl rounded-bl-none text-sm text-gray-700 shadow-sm max-w-[85%]">${text.replace(/\n/g, '<br>')}</div>`;
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            appendMessage('user', text);
+            chatInput.value = ''; chatInput.disabled = true; sendChatBtn.disabled = true;
+            chatHistory.push({ role: "user", parts: [{ text }] });
+
+            const typingId = 'typing-' + Date.now();
+            chatMessages.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex items-end justify-start"><div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2"><i class="ph-fill ph-robot text-primary-600 text-xs"></i></div><div class="bg-white p-3 py-4 rounded-2xl rounded-bl-none shadow-sm flex space-x-1"><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div></div></div>`);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ systemInstruction: sysInstruction, contents: chatHistory })
+                });
+                const data = await res.json();
+                document.getElementById(typingId)?.remove();
+                if (data.candidates?.[0]) {
+                    const botText = data.candidates[0].content.parts[0].text;
+                    appendMessage('model', botText);
+                    chatHistory.push({ role: "model", parts: [{ text: botText }] });
+                } else throw new Error();
+            } catch (err) {
+                document.getElementById(typingId)?.remove();
+                appendMessage('model', "Connection error. Please try again later.");
+                chatHistory.pop();
+            } finally {
+                chatInput.disabled = false; sendChatBtn.disabled = false; chatInput.focus();
+            }
+        }
+        sendChatBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+    </script>
+</body>
+</html>
+```eof
