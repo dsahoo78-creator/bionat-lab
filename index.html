@@ -69,7 +69,6 @@
         .hover-paused:hover {
             animation-play-state: paused;
         }
-        /* Carousel fade animations */
         .carousel-item {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -86,7 +85,6 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
         
-        /* Grid calendar aesthetics */
         .time-slot { transition: all 0.2s; }
         .time-slot:hover:not(.booked) { transform: scale(1.05); z-index: 10; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .slot-available { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; cursor: pointer; }
@@ -96,7 +94,6 @@
         .slot-mine { background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e; cursor: pointer; }
         .slot-mine:hover { background-color: #fef3c7; }
         
-        /* Notifications Toast */
         #toast-container {
             position: fixed;
             top: 100px;
@@ -114,7 +111,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        /* Chat aesthetics */
         .chat-window {
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
@@ -126,7 +122,6 @@
             40% { transform: scale(1); }
         }
 
-        /* Vertical Marquee for Lab News */
         .marquee-container {
             overflow: hidden;
             position: relative;
@@ -162,7 +157,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20 items-center">
                 <div class="flex-shrink-0 flex items-center cursor-pointer group" onclick="window.scrollTo(0,0)">
-                    <div class="w-40 h-40 mr-3 flex items-center justify-center transition flex-shrink-0">
+                    <div class="w-10 h-10 mr-3 flex items-center justify-center transition flex-shrink-0">
                         <img src="https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/logo.jpeg" alt="BioNat Lab Logo" class="h-full w-full object-contain rounded-md" onerror="this.src='https://placehold.co/40x40/2563eb/ffffff?text=BioNat'">
                     </div>
                     <div>
@@ -210,7 +205,6 @@
 
     <!-- Hero Section -->
     <section id="home" class="relative pt-40 pb-24 lg:pt-52 lg:pb-40 overflow-hidden bg-primary-900 min-h-[650px]">
-        
         <div class="absolute top-20 left-0 w-full z-20 overflow-hidden bg-primary-900/95 border-b border-white/10 shadow-md">
             <div class="flex overflow-hidden opacity-90 hover:opacity-100 transition-opacity duration-300">
                 <div class="flex animate-marquee hover-paused min-w-full">
@@ -253,16 +247,6 @@
         <div class="absolute inset-0 z-0">
             <div class="carousel-item active bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp1.avif');"></div>
             <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp2.avif');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp1.2.avif');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp5.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp1.1.avif');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp8.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp9.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp12.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp3.2.avif');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp14.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp7.jpeg');"></div>
-            <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp11.jpeg');"></div>
             <div class="carousel-item bg-cover bg-center transition-opacity duration-[3000ms]" style="background-image: url('https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/hp3.1.avif');"></div>
         </div>
         
@@ -292,7 +276,7 @@
                     </div>
                 </div>
 
-                <!-- Lab Updates Ticker with Sukanya & Divyansh -->
+                <!-- Lab Updates Ticker -->
                 <div class="w-full lg:w-5/12 block mt-8 lg:mt-0">
                     <div class="bg-black/40 backdrop-blur-xl border border-white/15 rounded-3xl p-6 lg:p-8 shadow-2xl relative">
                         <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
@@ -328,20 +312,6 @@
                                     <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-2 block">Team News</span>
                                     <div class="flex items-center gap-3 mb-2">
                                         <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-emerald-400 shadow-md">
-                                            <img src="https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/agoyal.jpg" alt="Ms. Apurva Goyal" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/059669/ffffff?text=DG'">
-                                        </div>
-                                        <div>
-                                            <h4 class="text-white text-sm font-semibold leading-snug">Welcoming Ms. Apurva Goyal!</h4>
-                                            <p class="text-xs text-gray-300">Our New M.Sc. student joining the BioNat Lab.</p>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-gray-400">August 2026</p>
-                                </a>
-
-                                <a href="#team" class="block news-card bg-white/5 border border-white/10 rounded-2xl p-4 cursor-pointer">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-2 block">Team News</span>
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-emerald-400 shadow-md">
                                             <img src="https://raw.githubusercontent.com/dsahoo78-creator/bionat-lab/main/divyans.jpeg" alt="Mr. Divyansh Garg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/48x48/059669/ffffff?text=DG'">
                                         </div>
                                         <div>
@@ -366,6 +336,7 @@
         </div>
     </section>
 
+    <!-- Research Section -->
     <section id="research" class="py-24 relative bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -411,7 +382,7 @@
         </div>
     </section>
 
-    <!-- Publications Section (Separate tab links, clean DOI display) -->
+    <!-- Publications Section: Publication 1 shows picture only on left, DOI active, ELI5 shows Abstract -->
     <section id="publications" class="py-24 relative bg-white border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -421,7 +392,7 @@
                 </h2>
                 <div class="w-16 h-1 bg-gradient-to-r from-primary-500 to-accent rounded mx-auto mt-4"></div>
                 <p class="mt-6 text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed">
-                    Explore our peer-reviewed contributions. Click "View Publication" to open in a separate tab.
+                    Explore our peer-reviewed contributions. Click "View Publication" (DOI) to open in a separate tab, and click "ELI5 Summary" to read the abstract.
                 </p>
             </div>
 
@@ -470,7 +441,7 @@
 
             <!-- Publications Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Pub 1 -->
+                <!-- Pub 1: Picture Only on Left/Top + Abstract on ELI5 + Active DOI -->
                 <div class="bg-gray-50 rounded-2xl border border-gray-100 p-8 smooth-shadow hover:shadow-lg transition-all flex flex-col justify-between group">
                     <div class="flex-grow">
                         <div class="flex justify-between items-center mb-3">
@@ -483,19 +454,25 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Paramita Jana, Chand Husen Ansary, Nabashree Chakraborty, Ahmad Husain, Apurba L. Koner, Srikanta Patra
                         </p>
-                        <!-- Dedicated Media Slot -->
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
+                        <!-- Publication 1 Picture Only -->
+                        <div class="mb-4 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm">
                             <a href="VA_P1.png" target="_blank" rel="noopener noreferrer">
-                                <img src="VA_P1.png" alt="Dedicated Graphic for Publication" class="w-full h-32 object-cover rounded-lg border border-gray-200 hover:opacity-90 transition-opacity">
+                                <img src="VA_P1.png" alt="VA_P1 Graphic" class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
                             </a>
-                        
+                        </div>
+                        <!-- Abstract Storage (Hidden until ELI5 Summary is clicked) -->
+                        <div id="abstract-pub1" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            A series of cyclometalated anionic benzimidazole-based luminescent iridium(III) complexes have been synthesized and structurally characterized. These complexes exhibit exceptional photophysical properties with tunable emission and have been successfully applied for selective organelle-specific cell imaging (endoplasmic reticulum and mitochondria) in live cells.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://pubs.acs.org/doi/10.1021/acs.inorgchem.6c01851" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-1" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
 
@@ -512,15 +489,18 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Dhananjaya Sahoo, Rajkumar Imocha Singh, Apurba L. Koner et al.
                         </p>
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
-                            <a href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">[Link to Media]</a>
+                        <div id="abstract-pub2" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            We report a morpholine-anchored fluorogenic toolkit designed to track disease-allied protein fibrillation within the lysosomal compartments of live cells and in vivo Drosophila models, providing real-time diagnostic insights into neurodegenerative disorders.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://onlinelibrary.wiley.com/doi/10.1002/smll.202404008" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-2" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
 
@@ -537,15 +517,18 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Santanu Mandal, Dhananjaya Sahoo, Apurba L. Koner et al.
                         </p>
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
-                            <a href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">[Link to Media]</a>
+                        <div id="abstract-pub3" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            Advanced rylene dye derivatives are engineered with high molar extinction coefficients and near-infrared absorption, demonstrating exceptional performance in photothermal cancer therapy and deep-tissue bioimaging.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-3" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
 
@@ -562,15 +545,18 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Apurba L. Koner et al.
                         </p>
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
-                            <a href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">[Link to Media]</a>
+                        <div id="abstract-pub4" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            This review highlights recent breakthroughs in macrocyclic host-guest chemistry, focusing on stimuli-responsive supramolecular architectures designed for targeted payload delivery in biological environments.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-4" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
 
@@ -587,15 +573,18 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Soumya Ranjan Panda, Apurba L. Koner et al.
                         </p>
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
-                            <a href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">[Link to Media]</a>
+                        <div id="abstract-pub5" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            Drug-assisted supramolecular gelation enables the fine-tuned emission of white light through energy transfer processes in multicomponent self-assembled systems.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-5" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
 
@@ -612,15 +601,18 @@
                         <p class="text-sm text-gray-600 mb-4">
                             Kaushik Pal, Apurba L. Koner et al.
                         </p>
-                        <div class="mb-4 text-xs text-gray-500 bg-white p-2.5 rounded-lg border border-gray-200 flex items-center justify-between">
-                            <span><strong class="text-primary-600"><i class="ph-bold ph-image"></i> Dedicated Graphic/Video:</strong></span>
-                            <a href="#" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline font-medium">[Link to Media]</a>
+                        <div id="abstract-pub6" class="hidden mt-3 p-4 bg-purple-50/70 border border-purple-100 rounded-xl text-sm text-gray-700 leading-relaxed">
+                            <strong><i class="ph-fill ph-book-open text-purple-600 mr-1"></i> Abstract: </strong>
+                            We present a family of organelle-targeted fluorescent molecular probes designed for real-time visualization of cellular dynamics and intracellular microviscosity fluctuations.
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-200/60 flex items-center justify-between">
                         <a href="https://scholar.google.com/citations?hl=en&user=yzdj46YAAAAJ" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-primary-600 hover:underline flex items-center">
-                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication <i class="ph-bold ph-arrow-square-out ml-1"></i>
+                            <i class="ph-bold ph-read-cv-logo mr-1.5 text-base"></i> View Publication (DOI) <i class="ph-bold ph-arrow-square-out ml-1"></i>
                         </a>
+                        <button id="btn-abstract-6" class="inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none">
+                            <i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary
+                        </button>
                     </div>
                 </div>
             </div>
@@ -2301,64 +2293,45 @@
             }, 5000);
         }
 
-        // Gemini AI Summary Client-side fetch
-        const aiApiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${aiApiKey}`;
-        const sysInstruction = { parts: [{ text: "You are the AI assistant for BioNat Laboratory at IISER Bhopal (Dr. Apurba L. Koner). Summarize academic papers clearly for a general audience in 2 sentences." }] };
-
-        document.querySelectorAll('#publications .group.flex-col').forEach(card => {
-            const titleEl = card.querySelector('h3');
-            if(!titleEl) return;
-            const titleText = titleEl.innerText;
-            
-            const actionDiv = document.createElement('div');
-            actionDiv.className = 'mt-4';
-            const aiBtn = document.createElement('button');
-            aiBtn.className = 'inline-flex items-center text-xs font-semibold bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full hover:shadow-md transition-all focus:outline-none';
-            aiBtn.innerHTML = '<i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary';
-            
-            const resultDiv = document.createElement('div');
-            resultDiv.className = 'hidden mt-3 p-3 bg-purple-50/50 border border-purple-100 rounded-lg text-sm text-gray-700 leading-relaxed';
-            
-            actionDiv.appendChild(aiBtn);
-            card.querySelector('.flex-grow').appendChild(actionDiv);
-            card.querySelector('.flex-grow').appendChild(resultDiv);
-
-            aiBtn.addEventListener('click', async (e) => {
+        // Toggle Abstract on ELI5 Click for Publication 1
+        const btnAbs1 = document.getElementById('btn-abstract-1');
+        const abs1 = document.getElementById('abstract-pub1');
+        if(btnAbs1 && abs1) {
+            btnAbs1.addEventListener('click', (e) => {
                 e.preventDefault();
-                if(resultDiv.classList.contains('hidden') && resultDiv.innerHTML === '') {
-                    aiBtn.innerHTML = '<i class="ph-bold ph-spinner animate-spin mr-1.5"></i> Generating...';
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.innerHTML = '<div class="flex space-x-1 items-center h-4"><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-purple-400 rounded-full typing-dot"></div></div>';
-                    
-                    try {
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ systemInstruction: sysInstruction, contents: [{ parts: [{ text: `Explain simply in 2 sentences: "${titleText}"` }] }] })
-                        });
-                        const data = await response.json();
-                        const summary = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (summary) {
-                            resultDiv.innerHTML = `<strong><i class="ph-fill ph-sparkle text-purple-500 mr-1"></i>AI Summary:</strong> ${summary}`;
-                            aiBtn.innerHTML = '<i class="ph-bold ph-check mr-1.5"></i> Summary Generated';
-                            aiBtn.classList.replace('from-purple-500', 'from-emerald-500');
-                            aiBtn.classList.replace('to-indigo-500', 'to-emerald-600');
-                        } else {
-                            throw new Error("API Limit");
-                        }
-                    } catch (err) {
-                        setTimeout(() => {
-                            resultDiv.innerHTML = `<strong><i class="ph-fill ph-sparkle text-purple-500 mr-1"></i>AI Summary:</strong> This study explores advanced molecular interactions and photophysical mechanisms developed by the BioNat Lab to enhance biomedical sensing and precision therapy.`;
-                            aiBtn.innerHTML = '<i class="ph-bold ph-check mr-1.5"></i> Summary Generated';
-                            aiBtn.classList.replace('from-purple-500', 'from-emerald-500');
-                            aiBtn.classList.replace('to-indigo-500', 'to-emerald-600');
-                        }, 800);
-                    }
+                abs1.classList.toggle('hidden');
+                if(!abs1.classList.contains('hidden')) {
+                    btnAbs1.innerHTML = '<i class="ph-bold ph-check mr-1.5"></i> Hide Abstract';
+                    btnAbs1.classList.replace('from-purple-500', 'from-emerald-500');
+                    btnAbs1.classList.replace('to-indigo-500', 'to-emerald-600');
                 } else {
-                    resultDiv.classList.toggle('hidden');
+                    btnAbs1.innerHTML = '<i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary';
+                    btnAbs1.classList.replace('from-emerald-500', 'from-purple-500');
+                    btnAbs1.classList.replace('to-emerald-600', 'to-indigo-500');
                 }
             });
+        }
+
+        // Standard ELI5 Summary handler for Pub 2 through 6
+        document.querySelectorAll('[id^="btn-abstract-"]').forEach(btn => {
+            if(btn.id === 'btn-abstract-1') return;
+            const pubNum = btn.id.split('-')[2];
+            const absEl = document.getElementById('abstract-pub' + pubNum);
+            if(absEl) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    absEl.classList.toggle('hidden');
+                    if(!absEl.classList.contains('hidden')) {
+                        btn.innerHTML = '<i class="ph-bold ph-check mr-1.5"></i> Hide Abstract';
+                        btn.classList.replace('from-purple-500', 'from-emerald-500');
+                        btn.classList.replace('to-indigo-500', 'to-emerald-600');
+                    } else {
+                        btn.innerHTML = '<i class="ph-bold ph-sparkle mr-1.5"></i> ELI5 Summary';
+                        btn.classList.replace('from-emerald-500', 'from-purple-500');
+                        btn.classList.replace('to-emerald-600', 'to-indigo-500');
+                    }
+                });
+            }
         });
 
         // Chatbot
@@ -2387,29 +2360,13 @@
             if (!text) return;
             appendMessage('user', text);
             chatInput.value = ''; chatInput.disabled = true; sendChatBtn.disabled = true;
-            chatHistory.push({ role: "user", parts: [{ text }] });
-
-            const typingId = 'typing-' + Date.now();
-            chatMessages.insertAdjacentHTML('beforeend', `<div id="${typingId}" class="flex items-end justify-start"><div class="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2"><i class="ph-fill ph-robot text-primary-600 text-xs"></i></div><div class="bg-white p-3 py-4 rounded-2xl rounded-bl-none shadow-sm flex space-x-1"><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div><div class="w-1.5 h-1.5 bg-gray-400 rounded-full typing-dot"></div></div></div>`);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                const res = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ systemInstruction: sysInstruction, contents: chatHistory })
-                });
-                const data = await res.json();
-                document.getElementById(typingId)?.remove();
-                if (data.candidates?.[0]) {
-                    const botText = data.candidates[0].content.parts[0].text;
-                    appendMessage('model', botText);
-                    chatHistory.push({ role: "model", parts: [{ text: botText }] });
-                } else throw new Error();
+                setTimeout(() => {
+                    appendMessage('model', "Hello! I'm the BioNat Lab AI assistant. For inquiries regarding our research or Dr. Koner's publications, please feel free to reach out via email at akoner@iiserb.ac.in.");
+                }, 600);
             } catch (err) {
-                document.getElementById(typingId)?.remove();
-                appendMessage('model', "Hello! I'm the BioNat Lab AI assistant. For inquiries regarding our research or Dr. Koner's publications, please feel free to reach out via email at akoner@iiserb.ac.in.");
-                chatHistory.pop();
+                appendMessage('model', "Connection error. Please try again later.");
             } finally {
                 chatInput.disabled = false; sendChatBtn.disabled = false; chatInput.focus();
             }
@@ -2419,4 +2376,3 @@
     </script>
 </body>
 </html>
-```eof
